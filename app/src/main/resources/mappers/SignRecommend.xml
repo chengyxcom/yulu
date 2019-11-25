@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="cn.eleven.app.mapper.SignRecommendMapper">
+    <resultMap id="SignRecommendEntityMap" type="cn.eleven.app.entity.SignRecommend">
+        <id column="recommend" property="recommend"/>
+        <result column="sign_type" property="signType"/>
+        <result column="song_single_name" property="songSingleName"/>
+    </resultMap>
+
+
+    <select id="findSignType" resultMap="SignRecommendEntityMap">
+        select *
+        from sign_recommend where sign_type=#{signType};
+    </select>
+
+</mapper>

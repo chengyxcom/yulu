@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+<mapper namespace="cn.eleven.app.mapper.SignTypeMapper">
+    <resultMap id="SignTypeEntityMap" type="cn.eleven.app.entity.SignType">
+        <id column="sign_type_id" property="signTypeId"/>
+        <result column="sign_type" property="signType"/>
+        <result column="sign_type_img" property="signTypeImg"/>
+    </resultMap>
+
+
+    <select id="findBySignTypeId" resultMap="SignTypeEntityMap">
+        select *
+        from sign_type where sign_type_id=#{signTypeId};
+    </select>
+
+    <select id="findBySign" resultMap="SignTypeEntityMap">
+        select * from sign_type where sign_type=#{signType}
+    </select>
+
+    <select id="findAll" resultMap="SignTypeEntityMap">
+        select *
+        from sign_type;
+    </select>
+
+</mapper>

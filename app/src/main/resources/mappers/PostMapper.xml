@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+<mapper namespace="cn.eleven.app.mapper.PostMapper">
+    <resultMap id="PostEntityMap" type="cn.eleven.app.entity.Post">
+        <id column="post_id" property="postId"/>
+        <result column="uid" property="uid"/>
+        <result column="post_state" property="postState"/>
+        <result column="post_time" property="postTime"/>
+        <result column="post_words" property="postWords"/>
+        <result column="post_img" property="postImg"/>
+    </resultMap>
+    <resultMap id="BigPostEntityMap" type="cn.eleven.app.entity.BigPost">
+        <result column="post_id" property="postId"/>
+        <result column="uid" property="uid"/>
+        <result column="post_state" property="postState"/>
+        <result column="post_time" property="postTime"/>
+        <result column="post_words" property="postWords"/>
+        <result column="post_img" property="postImg"/>
+        <result column="username" property="username"/>
+        <result column="avatar" property="avatar"/>
+    </resultMap>
+    <select id="showBigPostByTime" resultMap="BigPostEntityMap">
+        SELECT post_id,post.uid,post_state,post_time,
+        post_words,post_img,username,avatar
+        FROM user,post
+        WHERE post.uid = user.uid
+        AND post_state IN (1,2)
+        ORDER BY post_time DESC
+    </select>
+
+    <select id="showPostBySupport" resultMap="PostEntityMap">
+        SELECT *
+        FROM post,support_count
+        WHERE support_count.post_id = post.post_id
+        AND post.post_state IN (1,2)
+        ORDER BY support_count.support_count DESC
+    </select>
+
+    <select id="showBigPostBySupport" resultMap="BigPostEntityMap">
+        SELECT post.post_id, post.uid, post_state, post_time,
+        post_words,post_img,username,avatar
+        FROM user,post,support_count
+        WHERE support_count.post_id = post.post_id
+        AND post.uid = user.uid
+        AND post_state IN (1,2)
+        ORDER BY support_count.support_count DESC
+    </select>
+    <insert id="savePost">
+        INSERT INTO post
+        (uid, post_state,
+        post_time, post_words,
+        post_img)
+        VALUES
+        (#{uid},#{postState},
+        #{postTime},#{postWords},
+        #{postImg})
+    </insert>
+    <select id="getPostWords" resultMap="PostEntityMap">
+        select * from
+        post where post_state=1
+        and
+        post_words like '%${words}%'
+        order by post_time desc;
+    </select>
+    <select id="getUidByPostId" resultType="java.lang.Integer">
+        SELECT uid
+        FROM post
+        WHERE post_id=#{postId}
+    </select>
+    <select id="showPostByMyUid" resultMap="PostEntityMap">
+        SELECT *
+        FROM post
+        WHERE uid=#{uid}
+    </select>
+    <delete id="deletePost">
+        DELETE FROM post
+        WHERE post_id = #{postId}
+    </delete>
+</mapper>

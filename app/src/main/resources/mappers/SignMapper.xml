@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+<mapper namespace="cn.eleven.app.mapper.SignMapper">
+    <resultMap id="SignEntityMap" type="cn.eleven.app.entity.Sign">
+        <id column="sign_id" property="signId"/>
+        <result column="uid" property="uid"/>
+        <result column="sign_type_id" property="signTypeId"/>
+        <result column="sign_time" property="signTime"/>
+    </resultMap>
+
+    <insert id="saveSign" useGeneratedKeys="true" keyProperty="signId">
+        insert into sign(
+        uid, sign_type_id,
+        sign_time
+        ) values (
+        #{uid},#{signTypeId},
+        #{signTime}
+        )
+    </insert>
+
+    <select id="findBySignId" resultMap="SignEntityMap">
+        select *
+        from sign where sign_id=#{signId};
+    </select>
+
+    <select id="findByUid" resultMap="SignEntityMap">
+        select * from sign where uid=#{uid} order by sign_time desc limit 0,1;
+    </select>
+
+    <select id="countSign" resultType="java.lang.Integer">
+        select count(*) from sign where uid=#{uid};
+    </select>
+</mapper>

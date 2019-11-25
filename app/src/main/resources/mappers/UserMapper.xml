@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+<mapper namespace="cn.eleven.app.mapper.UserMapper">
+    <!-- 插入用户数据 -->
+    <!-- Integer save(User user) -->
+    <resultMap id="UserEntityMap" type="cn.eleven.app.entity.User">
+        <id column="uid" property="uid"/>
+        <result column="username" property="username"/>
+        <result column="password" property="password"/>
+        <result column="salt" property="salt"/>
+        <result column="avatar" property="avatar"/>
+        <result column="age" property="age"/>
+        <result column="gender" property="gender"/>
+        <result column="province_name" property="provinceName"/>
+        <result column="province_code" property="provinceCode"/>
+        <result column="city_name" property="cityName"/>
+        <result column="city_code" property="cityCode"/>
+        <result column="area_name" property="areaName"/>
+        <result column="area_code" property="areaCode"/>
+        <result column="phone" property="phone"/>
+        <result column="reg_time" property="regTime"/>
+        <result column="message" property="message"/>
+        <result column="birthday" property="birthday"/>
+        <result column="background_img" property="backgroundImg"/>
+        <result column="is_delete" property="isDelete"/>
+    </resultMap>
+
+    <!-- 用户注册插入用户数据接口 -->
+    <!-- Integer save(User user) -->
+    <insert id="save" useGeneratedKeys="true" keyProperty="uid">
+        INSERT INTO user
+        (username, password,
+        salt, avatar,
+        gender,
+        province_name, province_code,
+        city_name, city_code,
+        phone, reg_time,
+        message, birthday,
+        background_img, is_delete)
+        VALUES(#{username},#{password},
+        #{salt},#{avatar},
+        #{gender},
+        #{provinceName},#{provinceCode},
+        #{cityName},#{cityCode},
+        #{phone},#{regTime},
+        #{message},#{birthday},
+        #{backgroundImg},#{isDelete})
+    </insert>
+
+    <!--根据手机号码查询用户数据接口 -->
+    <!--User findByPhone(String phone) -->
+    <select id="findByPhone" resultMap="UserEntityMap">
+        SELECT
+        *
+        FROM
+        user
+        WHERE
+        phone=#{phone}
+    </select>
+
+    <!-- 根据id查询用户数据接口 -->
+    <!--User findByPhone(String phone) -->
+    <select id="findByUid" resultMap="UserEntityMap">
+        SELECT
+        *
+        FROM
+        user
+        WHERE
+        uid=#{uid}
+    </select>
+
+    <!--修改用户密码接口 -->
+    <!--Integer updatePassword(
+            @Param("uid") Integer uid,
+            @Param("password") String password); -->
+    <update id="updatePassword">
+        UPDATE
+        user
+        SET
+        password =#{password}
+        WHERE
+        uid=#{uid}
+    </update>
+
+    <update id="updateBirthday">
+        update user set birthday=#{birthday} where uid=#{uid}
+    </update>
+
+    <update id="changeUsername">
+        UPDATE user SET username=#{username} WHERE uid=#{uid}
+    </update>
+    <update id="changeMessage">
+        UPDATE user SET message=#{message} WHERE uid=#{uid}
+    </update>
+    <update id="changeDistrict">
+        UPDATE user
+        SET province_code = #{provinceCode},
+        province_name = #{provinceName},
+        city_code = #{cityCode}, city_name = #{cityName}
+        WHERE uid = #{uid}
+    </update>
+    <update id="changeAvatar">
+        UPDATE user
+        SET avatar=#{avatar}
+        WHERE uid=#{uid}
+    </update>
+    <update id="changeBackgroundImg">
+        UPDATE user
+        SET background_img = #{backgroundImg}
+        WHERE uid = #{uid}
+    </update>
+    <update id="changeGender">
+        UPDATE user
+        SET gender = #{gender}
+        WHERE uid=#{uid}
+    </update>
+    <select id="getUsernameByUid" resultType="java.lang.String">
+        SELECT username
+        FROM user
+        WHERE uid=#{uid}
+    </select>
+    <select id="getAvatarByUid" resultType="java.lang.String">
+        SELECT avatar
+        FROM user
+        WHERE uid = #{uid}
+    </select>
+</mapper>

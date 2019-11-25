@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+<mapper namespace="cn.eleven.app.mapper.LetterMapper">
+    <resultMap id="letterEntityMap" type="cn.eleven.app.entity.Letter">
+        <id column="letter_id" property="letterId"/>
+        <result column="user_left" property="userLeft"/>
+        <result column="user_right" property="userRight"/>
+        <result column="letter" property="letter"/>
+        <result column="letter_time" property="letterTime"/>
+        <result column="is_send" property="isSend"/>
+        <result column="user_right_delete" property="userRightDelete"/>
+        <result column="user_right_top" property="userRightTop"/>
+        <result column="is_delete" property="isDelete"/>
+        <result column="is_read" property="isRead"/>
+    </resultMap>
+    <resultMap id="BigLetterEntityMap" type="cn.eleven.app.entity.BigLetter">
+        <result column="letter_id" property="letterId"/>
+        <result column="uid" property="uid"/>
+        <result column="username" property="username"/>
+        <result column="avatar" property="avatar"/>
+        <result column="letter" property="letter"/>
+        <result column="letter_time" property="letterTime"/>
+        <result column="user_right_top" property="userRightTop"/>
+        <result column="is_send" property="isSend"/>
+    </resultMap>
+    <insert id="saveLetter">
+        INSERT INTO letter
+        (user_left, user_right,
+        letter, letter_time,
+        is_send, user_right_delete,
+        user_right_top, is_delete,
+        is_read)
+        VALUES
+        (#{userLeft}, #{userRight},
+        #{letter}, #{date},
+        #{isSend}, 0,
+        0, 0,
+        0)
+    </insert>
+    <select id="findUserUid" resultMap="BigLetterEntityMap">
+        SELECT uid, username, avatar
+        FROM user, letter
+        WHERE user.uid = letter.user_right
+        AND letter.user_left = #{userLeft}
+        AND letter.user_right_delete = 0
+        GROUP BY uid, username, avatar;
+    </select>
+    <select id="findFirstLetterByUid" resultMap="letterEntityMap">
+        SELECT letter_id, letter, letter_time, user_right_top
+        FROM letter
+        WHERE user_right = #{uid}
+        ORDER BY letter_time DESC
+        LIMIT 0,1
+    </select>
+    <update id="updateUserRightDelete">
+        UPDATE letter
+        SET user_right_delete = 1
+        WHERE user_left = #{userLeft}
+        AND user_right = #{userRight}
+    </update>
+    <update id="setUserRightDelete">
+        UPDATE letter
+        SET user_right_delete = 0
+        WHERE user_left = #{userLeft}
+        AND user_right = #{userRight}
+    </update>
+    <update id="setTop">
+        UPDATE letter
+        SET user_right_top = 1
+        WHERE user_left = #{userLeft}
+        AND user_right = #{userRight}
+    </update>
+    <update id="cancelTop">
+        UPDATE letter
+        SET user_right_top = 0
+        WHERE user_left = #{userLeft}
+        AND user_right = #{userRight}
+    </update>
+    <select id="showLetter" resultMap="BigLetterEntityMap">
+        SELECT letter_id, letter, letter_time, user_right_top, is_send
+        FROM letter
+        WHERE user_left = #{userLeft}
+        AND user_right = #{userRight}
+        AND is_delete = 0
+    </select>
+    <select id="getUserLeft" resultType="java.lang.Integer">
+        SELECT user_left
+        FROM letter
+        WHERE letter_id = #{letterId}
+    </select>
+    <select id="getUserRight" resultType="java.lang.Integer">
+        SELECT user_right
+        FROM letter
+        WHERE letter_id = #{letterId}
+    </select>
+    <update id="deleteLetter">
+        UPDATE letter
+        SET is_delete = 1
+        WHERE letter_id = #{letterId}
+    </update>
+    <update id="changeIsReadState">
+        UPDATE letter
+        SET is_read = 1
+        WHERE is_read = 0
+        AND user_left = #{userLeft}
+        AND user_right = #{userRight}
+    </update>
+</mapper>

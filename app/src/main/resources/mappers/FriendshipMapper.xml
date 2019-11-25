@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+<mapper namespace="cn.eleven.app.mapper.FriendshipMapper">
+    <resultMap id="FriendshipEntityMap" type="cn.eleven.app.entity.Friendship">
+        <result column="user_left" property="userLeft"/>
+        <result column="user_right" property="userRight"/>
+        <result column="relation" property="relation"/>
+    </resultMap>
+    <resultMap id="UserEntityMap" type="cn.eleven.app.entity.User">
+        <id column="uid" property="uid"/>
+        <result column="username" property="username"/>
+        <result column="password" property="password"/>
+        <result column="salt" property="salt"/>
+        <result column="avatar" property="avatar"/>
+        <result column="age" property="age"/>
+        <result column="gender" property="gender"/>
+        <result column="province_name" property="provinceName"/>
+        <result column="province_code" property="provinceCode"/>
+        <result column="city_name" property="cityName"/>
+        <result column="city_code" property="cityCode"/>
+        <result column="area_name" property="areaName"/>
+        <result column="area_code" property="areaCode"/>
+        <result column="phone" property="phone"/>
+        <result column="reg_time" property="regTime"/>
+        <result column="message" property="message"/>
+        <result column="birthday" property="birthday"/>
+        <result column="background_img" property="backgroundImg"/>
+        <result column="is_delete" property="isDelete"/>
+    </resultMap>
+
+    <insert id="saveFriendship">
+        INSERT INTO friendship(user_left,user_right,relation) VALUES (#{userLeft},#{userRight},1)
+    </insert>
+    <delete id="cancelFriendship">
+        DELETE FROM friendship WHERE user_left=#{userLeft} AND user_right=#{userRight}
+    </delete>
+    <select id="getRelationByUserRight" resultType="java.lang.Integer">
+        SELECT relation FROM friendship WHERE user_left=#{userRight} AND user_right=#{userLeft}
+    </select>
+    <update id="updateRelationLeft">
+        UPDATE friendship SET relation=#{relation} WHERE user_left=#{userLeft} AND user_right=#{userRight}
+    </update>
+    <update id="updateRelationRight">
+        UPDATE friendship SET relation=#{relation} WHERE user_left=#{userRight} AND user_right=#{userLeft}
+    </update>
+    <select id="showMutualConcern" resultMap="UserEntityMap">
+        SELECT uid,username,avatar,message
+        FROM user,friendship
+        WHERE friendship.user_right = uid
+        AND friendship.user_left = #{userLeft}
+        AND friendship.relation = 2
+    </select>
+    <select id="showMyConcern" resultMap="UserEntityMap">
+        SELECT uid,username,avatar,message
+        FROM friendship,user
+        WHERE friendship.user_right = uid
+        AND friendship.user_left = #{userLeft}
+    </select>
+    <select id="showConcernAboutMe" resultMap="UserEntityMap">
+        SELECT uid,username,avatar,message
+        FROM friendship,user
+        WHERE friendship.user_left = uid
+        AND friendship.user_right = #{userRight}
+    </select>
+</mapper>

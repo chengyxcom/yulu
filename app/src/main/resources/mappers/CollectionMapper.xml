@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+        "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+<mapper namespace="cn.eleven.app.mapper.CollectionMapper">
+
+    <resultMap id="BigPostEntityMap" type="cn.eleven.app.entity.BigPost">
+        <result column="post_id" property="postId"/>
+        <result column="uid" property="uid"/>
+        <result column="post_state" property="postState"/>
+        <result column="post_time" property="postTime"/>
+        <result column="post_words" property="postWords"/>
+        <result column="post_img" property="postImg"/>
+        <result column="username" property="username"/>
+        <result column="avatar" property="avatar"/>
+    </resultMap>
+
+    <insert id="collectionPost">
+        INSERT INTO collection_post VALUES (#{uid},#{postId},#{date})
+    </insert>
+    <insert id="collectionMusic">
+        INSERT INTO collection_music VALUES (#{uid},#{musicId},#{date})
+    </insert>
+    <insert id="collectionStation">
+        INSERT INTO collection_station VALUES (#{uid},#{stationId},#{date})
+    </insert>
+    <delete id="undoCollectionPost">
+        DELETE FROM collection_post
+        WHERE uid=#{uid} AND post_id=#{postId}
+    </delete>
+    <delete id="undoCollectionMusic">
+        DELETE FROM collection_music
+        WHERE uid=#{uid} AND music_id=#{musicId}
+    </delete>
+    <delete id="undoCollectionStation">
+        DELETE FROM collection_station
+        WHERE uid=#{uid} AND station_id=#{stationId}
+    </delete>
+    <select id="countPostCollection" resultType="java.lang.Integer">
+        SELECT count(*) FROM collection_post WHERE post_id = #{postId}
+    </select>
+    <select id="countMusicCollection" resultType="java.lang.Integer">
+        SELECT count(*) FROM collection_music WHERE music_id = #{musicId}
+    </select>
+    <select id="countStationCollection" resultType="java.lang.Integer">
+        SELECT count(*) FROM collection_station WHERE station_id = #{stationId}
+    </select>
+
+    <select id="findPostId" resultType="java.lang.Integer">
+        SELECT post_id FROM collection_post_count WHERE post_id=#{postId}
+    </select>
+    <select id="findMusicId" resultType="java.lang.Integer">
+        SELECT music_id FROM collection_music_count WHERE music_id=#{musicId}
+    </select>
+    <select id="findStationId" resultType="java.lang.Integer">
+        SELECT station_id FROM collection_station_count WHERE station_id=#{stationId}
+    </select>
+
+    <insert id="insertPostId">
+        INSERT INTO collection_post_count VALUES (#{postId},1)
+    </insert>
+    <insert id="insertMusicId">
+        INSERT INTO collection_music_count VALUES (#{musicId},1)
+    </insert>
+    <insert id="insertStationId">
+        INSERT INTO collection_station_count VALUES (#{stationId},1)
+    </insert>
+
+    <update id="updateCollectionCount">
+        UPDATE collection_post_count SET collection_count=#{count} WHERE post_id = #{postId}
+    </update>
+    <update id="updateCollectionCount1">
+        UPDATE collection_music_count SET collection_count=#{count} WHERE music_id = #{musicId}
+    </update>
+    <update id="updateCollectionCount2">
+        UPDATE collection_station_count SET collection_count=#{count} WHERE station_id = #{stationId}
+    </update>
+
+    <select id="collectionPostList" resultMap="BigPostEntityMap">
+        SELECT post.post_id,post.uid,post_state,
+        post_time,post_words,post_img,
+        username,avatar
+        FROM post,user,collection_post
+        WHERE post.uid = user.uid
+        AND post.post_id = collection_post.post_id
+        AND collection_post.uid = #{uid}
+    </select>
+</mapper>
